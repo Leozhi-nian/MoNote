@@ -23,6 +23,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+<<<<<<< HEAD
+=======
+        assert navHostFragment != null;
+>>>>>>> dev
         NavController controller = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(binding.bottomNavBar, controller);
     }
