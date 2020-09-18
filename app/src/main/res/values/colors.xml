@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FAFAFA</color>
-    <color name="colorPrimaryDark">#FAFAFA</color>
-    <color name="colorAccent">#000000</color>
+    <color name="colorPrimary">#FFFEFEFE</color>
+    <color name="colorPrimaryDark">#FFFEFEFE</color>
+    <color name="colorAccent">#FF121212</color>
 
-    <color name="colorFabIcon">#FAFAFA </color>
-    <color name="colorNavIcon">#121212</color>
+    <color name="textColorPrimary">#DE000000</color>
+    <color name="textColorPrimaryDisabled">#39000000</color>
+    <color name="textColorPrimaryInverse">#FFFFFFFF</color>
+
+    <color name="colorFabIcon">#FFF2F2F2 </color>
+    <color name="colorNavIcon">#FF121212</color>
 </resources>

@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="card_file_item_height">60dp</dimen>
+    <dimen name="card_file_item_margin_horizontal">16dp</dimen>
+    <dimen name="card_file_item_margin_vertical">6dp</dimen>
+    <dimen name="card_file_item_padding_content">16dp</dimen>
+    <dimen name="card_file_item_radius">12dp</dimen>
 
+    <dimen name="recyclerview_file_list_padding_clip">60dp</dimen>
+
+    <!-- 文本大小 -->
+    <dimen name="text_size_smaller">12sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_larger">20sp</dimen>
 </resources>
