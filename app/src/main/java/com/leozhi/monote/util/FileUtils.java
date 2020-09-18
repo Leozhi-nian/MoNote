@@ -19,33 +19,15 @@ import java.util.Objects;
  * @date 20-9-17
  */
 public class FileUtils {
-    private static Uri rootUri;
-    private FileUtils() {
-    }
-
-    private static class Holder {
-        private static final FileUtils INSTANCE = new FileUtils();
-    }
-
-    public static FileUtils getInstance(Uri uri) {
-        rootUri = uri;
-        return Holder.INSTANCE;
-    }
-
-
-    public String getRootUri() {
-        return rootUri.getLastPathSegment();
-    }
-
     /**
      * 获取路径
      */
-    public String[] getPathByUri(Uri uri) {
+    public static String[] getPathByUri(Uri uri) {
         String path;
         if (Objects.requireNonNull(uri.getLastPathSegment()).startsWith("home:")) {
             path = uri.getLastPathSegment().substring(5) + "Documents";
         } else {
-            path  = Objects.requireNonNull(uri.getLastPathSegment()).substring(getRootUri().length());
+            path = uri.getLastPathSegment().split(":")[1];
         }
         return path.split(File.separator);
     }
@@ -53,21 +35,21 @@ public class FileUtils {
     /**
      * 获取文件或目录相较于所选根目录的深度
      */
-    public int getFileOrDirectoryDepth(Uri uri) {
+    public static int getFileOrDirectoryDepth(Uri uri) {
         return getPathByUri(uri).length;
     }
 
     /**
      * 获取文件或目录的名称
      */
-    public String getFileOrDirectoryName(Uri uri) {
+    public static String getFileOrDirectoryName(Uri uri) {
         return getPathByUri(uri)[getFileOrDirectoryDepth(uri) - 1];
     }
 
     /**
      * 获取目录下的文件及文件夹
      */
-    public List<FileBean> getFileOrDirectoryList(Uri uri, Context context) {
+    public static List<FileBean> getFileOrDirectoryList(Uri uri, Context context) {
         List<FileBean> fileList = new ArrayList<>();
         DocumentFile[] documentFiles;
         documentFiles = Objects.requireNonNull(DocumentFile.fromTreeUri(context, uri)).listFiles();
@@ -86,7 +68,7 @@ public class FileUtils {
     /**
      * 获取文件或目录大小
      */
-    public String getFileOrDirectorySize(DocumentFile file) {
+    public static String getFileOrDirectorySize(DocumentFile file) {
         long size;
         if (file.isDirectory()) {
             DocumentFile[] documentFiles = file.listFiles();

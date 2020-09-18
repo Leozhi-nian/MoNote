@@ -2,7 +2,6 @@ package com.leozhi.monote.ui.mine;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,36 +28,17 @@ public class MineFragment extends Fragment implements LifecycleObserver {
         return new MineFragment();
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    public void create() {
-        mViewModel = new ViewModelProvider(this).get(MineViewModel.class);
-        // TODO: Use the ViewModel
-        Log.e("tag","onCreate");
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentMineBinding.inflate(getLayoutInflater());
+        return binding.getRoot();
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    public void start() {
-        Log.e("tag","onStart");
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void resume() {
-        Log.e("tag","onResume");
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void pause() {
-        Log.e("tag","onPause");
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    public void stop() {
-        Log.e("tag","onStop");
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void destroy() {
-        Log.e("tag","onDestroy");
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
@@ -73,17 +53,9 @@ public class MineFragment extends Fragment implements LifecycleObserver {
         requireActivity().getLifecycle().removeObserver(this);
     }
 
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        binding = FragmentMineBinding.inflate(getLayoutInflater());
-        return binding.getRoot();
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    public void create() {
+        mViewModel = new ViewModelProvider(this).get(MineViewModel.class);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }

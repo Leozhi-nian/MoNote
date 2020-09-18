@@ -18,7 +18,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.leozhi.monote.R;
 import com.leozhi.monote.databinding.ActivityMainBinding;
-import com.leozhi.monote.util.FileUtils;
 
 import java.util.Objects;
 
@@ -28,7 +27,6 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private MainViewModel mainViewModel;
-    private FileUtils fileUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
         mainViewModel = new ViewModelProvider(this,
                 new SavedStateViewModelFactory(getApplication(), this)).get(MainViewModel.class);
-
-        fileUtils = FileUtils.getInstance(mainViewModel.getRootUri().getValue());
 
         // 判断权限
         if (Objects.requireNonNull(mainViewModel.getStoragePermissionState().getValue())) {
@@ -94,18 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         assert data != null;
                         mainViewModel.setStoragePermissionState(true);
                         mainViewModel.setRootUri(data.getData());
-                        // content://com.android.externalstorage.documents/tree/primary%3A
-                        // primary:
-                        // content://com.android.externalstorage.documents/tree/home%3A
-                        // home:
-                        // content://com.android.externalstorage.documents/tree/primary%3ADownload
-                        // primary:Download
-                        // content://com.android.externalstorage.documents/tree/primary%3ALeozhi
-                        // primary:Leozhi
-                        // content://com.android.providers.downloads.documents/tree/downloads
-                        // downloads
-                        // content://com.android.providers.downloads.documents/tree/raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2FMiDrive
-                        // raw:/storage/emulated/0/Download/MiDrive
+                        mainViewModel.saveData();
                     }
                 }
             });
