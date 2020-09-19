@@ -8,7 +8,7 @@ import android.net.Uri;
  */
 public class FileBean {
     private Uri fileUri;
-    private int depth;
+    private String filePath;
     private String fileName;
     private String fileSize;
     private long fileDate;
@@ -21,28 +21,32 @@ public class FileBean {
         return fileUri;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
     public String getFileName() {
         return fileName;
-    }
-
-    public String getFileSize() {
-        return fileSize;
-    }
-
-    public long getFileDate() {
-        return fileDate;
-    }
-
-    public void setDepth(int depth) {
-        this.depth = depth;
     }
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
+    public String getFileSize() {
+        return fileSize;
+    }
+
     public void setFileSize(String fileSize) {
         this.fileSize = fileSize;
+    }
+
+    public long getFileDate() {
+        return fileDate;
     }
 
     public void setFileDate(long fileDate) {

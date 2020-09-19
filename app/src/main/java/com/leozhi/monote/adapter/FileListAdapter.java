@@ -1,6 +1,7 @@
 package com.leozhi.monote.adapter;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,15 +19,16 @@ import java.util.Locale;
  * @author leozhi
  * @date 20-9-16
  */
-public class FileListAdapter extends ListAdapter<FileBean, FileListAdapter.ViewHolder> {
+public class FileListAdapter extends ListAdapter<FileBean, FileListAdapter.ViewHolder>
+        implements View.OnClickListener, View.OnLongClickListener {
     private RecyclerView recyclerView;
-    private LayoutFileBinding mBinding;
+    private OnItemClickListener onItemClickListener;
+    private OnItemLongClickListener onItemLongClickListener;
 
     public FileListAdapter() {
         super(new DiffUtil.ItemCallback<FileBean>() {
             @Override
             public boolean areItemsTheSame(@NonNull FileBean oldItem, @NonNull FileBean newItem) {
-                // 此处修改为Uri
                 return oldItem.getFileUri() == newItem.getFileUri();
             }
 
@@ -40,7 +42,9 @@ public class FileListAdapter extends ListAdapter<FileBean, FileListAdapter.ViewH
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        mBinding = LayoutFileBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        LayoutFileBinding mBinding = LayoutFileBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        mBinding.getRoot().setOnClickListener(this);
+        mBinding.getRoot().setOnLongClickListener(this);
         return new ViewHolder(mBinding);
     }
 
@@ -52,6 +56,57 @@ public class FileListAdapter extends ListAdapter<FileBean, FileListAdapter.ViewH
     @Override
     public int getItemCount() {
         return super.getItemCount();
+    }
+
+    @Override
+    public void onClick(View v) {
+        int position = recyclerView.getChildAdapterPosition(v);
+        if (onItemClickListener != null) {
+            onItemClickListener.onItemClick(recyclerView, v, position, getItem(position));
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        int position = recyclerView.getChildAdapterPosition(v);
+        if (onItemLongClickListener != null) {
+            onItemLongClickListener.onItemLongClick(recyclerView, v, position, getItem(position));
+        }
+        return true;
+    }
+
+    /**
+     * 文件列表项目点击事件
+     */
+    public interface OnItemClickListener {
+        void onItemClick(RecyclerView parent, View view, int position, FileBean file);
+    }
+
+    /**
+     * 文件列表项目长按事件
+     */
+    public interface OnItemLongClickListener {
+        void onItemLongClick(RecyclerView parent, View view, int position, FileBean file);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener onItemLongClickListener) {
+        this.onItemLongClickListener = onItemLongClickListener;
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        this.recyclerView = recyclerView;
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        this.recyclerView = null;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

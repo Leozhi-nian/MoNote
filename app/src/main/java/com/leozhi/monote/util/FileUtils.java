@@ -1,10 +1,13 @@
 package com.leozhi.monote.util;
 
-import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
+import android.text.TextUtils;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import com.leozhi.monote.MyApplication;
 import com.leozhi.monote.bean.FileBean;
 
 import java.io.File;
@@ -12,63 +15,81 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author leozhi
- * @date 20-9-17
+ * @date 20-9-19
  */
 public class FileUtils {
     /**
-     * 获取路径
+     * 获取根目录
      */
-    public static String[] getPathByUri(Uri uri) {
-        String path;
-        if (Objects.requireNonNull(uri.getLastPathSegment()).startsWith("home:")) {
-            path = uri.getLastPathSegment().substring(5) + "Documents";
-        } else {
-            path = uri.getLastPathSegment().split(":")[1];
+    public static String getRootDir(Uri uri) {
+        DocumentFile documentFile = DocumentFile.fromTreeUri(MyApplication.getContext(), uri);
+        assert documentFile != null;
+        return documentFile.getUri().getLastPathSegment();
+    }
+
+    /**
+     * 获取目录下的文件及目录
+     */
+    public static List<FileBean> getFileOrDirList(Uri uri, String path) {
+        List<FileBean> fileBeanList = new ArrayList<>();
+        DocumentFile documentFile = DocumentFile.fromTreeUri(MyApplication.getContext(), uri);
+        DocumentFile nextFile;
+        String[] pathSegments = path.split(File.separator);
+        assert documentFile != null;
+        for (String segment : pathSegments) {
+            if (TextUtils.isEmpty(segment)) {
+                continue;
+            }
+            nextFile = documentFile.findFile(segment);
+            if (nextFile != null) {
+                 documentFile = nextFile;
+            }
         }
-        return path.split(File.separator);
-    }
-
-    /**
-     * 获取文件或目录相较于所选根目录的深度
-     */
-    public static int getFileOrDirectoryDepth(Uri uri) {
-        return getPathByUri(uri).length;
-    }
-
-    /**
-     * 获取文件或目录的名称
-     */
-    public static String getFileOrDirectoryName(Uri uri) {
-        return getPathByUri(uri)[getFileOrDirectoryDepth(uri) - 1];
-    }
-
-    /**
-     * 获取目录下的文件及文件夹
-     */
-    public static List<FileBean> getFileOrDirectoryList(Uri uri, Context context) {
-        List<FileBean> fileList = new ArrayList<>();
-        DocumentFile[] documentFiles;
-        documentFiles = Objects.requireNonNull(DocumentFile.fromTreeUri(context, uri)).listFiles();
+        DocumentFile[] documentFiles = documentFile.listFiles();
         for (DocumentFile file : documentFiles) {
             FileBean fileBean = new FileBean(file.getUri());
-            fileBean.setDepth(getFileOrDirectoryDepth(file.getUri()));
-            fileBean.setFileName(getFileOrDirectoryName(file.getUri()));
-            fileBean.setFileSize(getFileOrDirectorySize(file) + "");
-            fileBean.setFileDate(file.lastModified());
-            fileList.add(fileBean);
+            fileBean.setFileName(getFileOrDirDisplayName(file.getUri()));
+            fileBean.setFilePath(path + File.separator + getFileOrDirDisplayName(file.getUri()));
+            fileBean.setFileSize(getFileOrDirSize(file));
+            fileBean.setFileDate(getFileOrDirModifyDate(file));
+            fileBeanList.add(fileBean);
         }
-        Collections.sort(fileList, (file1, file2) -> file1.getFileName().compareTo(file2.getFileName()));
-        return fileList;
+        Collections.sort(fileBeanList, (file1, file2) -> file1.getFileName().compareTo(file2.getFileName()));
+        return fileBeanList;
+    }
+
+    /**
+     * 获取文件或目录名
+     */
+    public static String getFileOrDirDisplayName(Uri uri) {
+        Cursor cursor = MyApplication.getContext().getContentResolver()
+                .query(uri, null, null, null, null);
+        String displayName = "";
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            }
+        } finally {
+            assert cursor != null;
+            cursor.close();
+        }
+        return displayName;
+    }
+
+    /**
+     * 获取文件修改时间
+     */
+    public static long getFileOrDirModifyDate(DocumentFile documentFile) {
+        return documentFile.lastModified();
     }
 
     /**
      * 获取文件或目录大小
      */
-    public static String getFileOrDirectorySize(DocumentFile file) {
+    public static String getFileOrDirSize(DocumentFile file) {
         long size;
         if (file.isDirectory()) {
             DocumentFile[] documentFiles = file.listFiles();

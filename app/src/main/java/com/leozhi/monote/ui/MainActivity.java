@@ -1,7 +1,6 @@
 package com.leozhi.monote.ui;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -41,9 +40,8 @@ public class MainActivity extends AppCompatActivity {
         if (Objects.requireNonNull(mainViewModel.getStoragePermissionState().getValue())) {
             try {
                 int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                ContentResolver resolver = getContentResolver();
                 if (mainViewModel.getRootUri().getValue() != null) {
-                    resolver.takePersistableUriPermission(mainViewModel.getRootUri().getValue(), takeFlags);
+                    getContentResolver().takePersistableUriPermission(mainViewModel.getRootUri().getValue(), takeFlags);
                 }
             } catch (SecurityException e) {
                 e.printStackTrace();
@@ -61,6 +59,15 @@ public class MainActivity extends AppCompatActivity {
                 requestStoragePermission();
             }
         });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if (mainViewModel.getRootUri().getValue() != null) {
+            int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+            getContentResolver().takePersistableUriPermission(mainViewModel.getRootUri().getValue(), takeFlags);
+        }
     }
 
     @Override
